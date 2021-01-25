@@ -1,6 +1,7 @@
 
 export class  storageService {
     private static keyName: string = 'commentsTree'
+
     public static getTree(): string | null {
        return  localStorage.getItem(this.keyName)
     }

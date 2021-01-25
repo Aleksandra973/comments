@@ -14,11 +14,37 @@ export interface RootState {
     commentsModule: CommentNode[];
 }
 
-const store: StoreOptions<RootState> = {
+/*const store: StoreOptions<RootState> = {
 
     modules: {
         commentsModule
-    }
-};
+    },
 
-export default new Vuex.Store<RootState>(store);
+};*/
+
+//export default new Vuex.Store<RootState>(store);
+
+const Store  = new Vuex.Store<RootState>({
+        modules: {
+            commentsModule
+        }
+    }
+)
+
+export default Store
+/*export default store(function ({ Vue }) {
+    Vue.use(Vuex);
+
+    const Store = new Vuex.Store<StateInterface>({
+        modules: {
+            currentLibraryModule,
+            librariesListModule
+        },
+
+        // enable strict mode (adds overhead!)
+        // for dev mode only
+        strict: !!process.env.DEBUGGING
+    });
+
+    return Store;
+});*/

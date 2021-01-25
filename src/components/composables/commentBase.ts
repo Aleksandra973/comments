@@ -1,8 +1,13 @@
 import {CommentNode} from "@/types/common";
 import Vue from "vue";
+import $store from "../../store"
 
 export function addChildComment (this:any, e:any, comment: CommentNode) {
-    //debugger
+   // debugger
+
     comment.childs.push(e)
-    this.$forceUpdate();
+
+    $store.dispatch('commentsModule/addComment', {
+        newItem: e
+    });
 }

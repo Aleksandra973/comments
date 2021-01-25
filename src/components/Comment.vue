@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <span>{{ comment.name }}: {{ comment.message }}</span>
+      <span>{{ comment.message }}:{{ comment.name }}</span>
     </div>
 
     <div>
@@ -15,7 +15,7 @@
         <Comment
             v-for="child in comment.childs"
             :comment="child"
-            @addComment="addChildComment($event, child)"
+            @addComment="addChildComment($event, child)" :parent-id="comment.id"
 
         />
       </div>
@@ -33,6 +33,9 @@ import {CommentNode} from "@/types/common";
 import {addChildComment} from "./composables/commentBase"
 import Vue from "vue";
 
+import moment from "moment";
+import {uuidv4} from "@/store/comments-module/treeHelper";
+
 
 export default Vue.extend({
   name: "Comment",
@@ -40,6 +43,10 @@ export default Vue.extend({
     comment: {
       type: Object as PropType<CommentNode>,
       required: true
+    },
+    parentId: {
+      type: String,
+      required: false
     }
   },
   data() {
@@ -51,16 +58,23 @@ export default Vue.extend({
   },
   methods: {
     toggle() {
+      this.message = ''
       this.isVisible = !this.isVisible
       this.isDisable = !this.isDisable
     },
+    moment(dt: Date) {
+      return moment(dt).format()
+    },
     addComment() {
-      this.$emit('addComment', {
-        name: "name-" + new Date(),
-        message: this.message,
-        date: new Date(),
-        childs: []
-      } as CommentNode);
+      debugger
+      var event = new CommentNode();
+      event.parentId = this.comment.id
+      event.message = this.message
+      event.date = new Date()
+      event.childs = []
+      event.id = uuidv4()
+
+      this.$emit('addComment', event);
       this.message = ''
       this.toggle()
     },

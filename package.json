@@ -9,6 +9,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
+    "@types/vue": "^2.0.0",
     "vuex": "^3.4.0",
     "bootstrap": "^4.6.0",
     "jquery": "^3.5.1",
@@ -21,7 +22,8 @@
     "@vue/cli-service": "~4.5.0",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.2",
-    "typescript": "~3.9.3",
-    "vue-template-compiler": "^2.6.11"
+    "typescript": "~3.9.7",
+    "vue-template-compiler": "^2.6.11",
+    "moment": "^2.29.1"
   }
 }

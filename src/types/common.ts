@@ -1,13 +1,15 @@
-export interface CommentNode {
-    name: string;
-    message: string;
-    date: Date;
-    childs: CommentNode[]
+import {uuidv4} from "@/store/comments-module/treeHelper";
+
+export class CommentNode {
+    name: string = '';
+    message: string = '';
+    date: Date = new Date();
+    id: string = uuidv4();
+    parentId: string = 'root';
+    childs: CommentNode[] = []
 }
 
 export interface ModifyCommentDto {
-    root: CommentNode[],
-    node: CommentNode,
     newItem: CommentNode
 }
 

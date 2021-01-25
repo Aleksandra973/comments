@@ -12,7 +12,7 @@
     <Comment
         v-for="comment in commentsTree"
         @addComment="addChildComment($event, comment)"
-        :comment="comment"/>
+        :comment="comment" :parent-id="root"/>
   </div>
 </template>
 
@@ -20,7 +20,10 @@
 import Comment from "./Comment.vue"
 import {CommentNode} from "@/types/common";
 import Vue  from "vue";
+//import { mapGetters, mapActions} from 'vuex';
 import {addChildComment} from "./composables/commentBase"
+import $store from "../store"
+import {TreeHelper, uuidv4} from "@/store/comments-module/treeHelper";
 
 export default Vue.extend({
   name: "CommentsTree",
@@ -29,7 +32,8 @@ export default Vue.extend({
       commentsTree: [] as CommentNode[],
       isVisible: false,
       isDisable: false,
-      rootNode: {} as CommentNode
+      rootNode: new CommentNode(),
+      root: 'root'
     }
 
   },
@@ -37,20 +41,46 @@ export default Vue.extend({
     Comment
   },
   methods: {
-    addRootComment () {
+   // ...mapActions('comments-module', { addTestComment: 'addComment'}),
+    addRootComment (): void {
       this.rootNode.date = new Date()
-      this.rootNode.name = `name-${new Date()}`
+      this.rootNode.name = `name-${uuidv4().substring(0,3)}`
       this.rootNode.childs = []
+      this.rootNode.id = uuidv4()
+      this.rootNode.parentId = 'root'
       this.commentsTree.push(this.rootNode)
+
+      debugger
+
+      $store.dispatch('commentsModule/addComment', {
+        newItem: this.rootNode
+      });
+
+
+      //var th = new TreeHelper();
+      //var res=  th.convertToFlat(this.commentsTree)
+     // console.log(this.commentsTree)
+      //console.log(res)
+      /*this.addTestComment({
+        node: this.commentsTree,
+        newItem: this.rootNode
+      });*/
+
       this.toggle()
-      this.rootNode.message = ''
+
     },
     addChildComment,
-    toggle() {
+    toggle(): void {
+      this.rootNode = {  } as CommentNode;
       this.isVisible = !this.isVisible
       this.isDisable = !this.isDisable
     },
-  }
+  },
+    /*computed: {
+    ...mapGetters([
+    'getTree'
+  ]),
+    } */
 
 })
 </script>

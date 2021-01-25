@@ -3,22 +3,22 @@ import {RootState} from '../index';
 import {CommentsState} from './state';
 import {storageService} from "@/services/storageService";
 import {CommentNode} from "@/types/common";
+import {KeyValue} from "@/store/comments-module/treeHelper";
 
 const getters: GetterTree<CommentsState, RootState> = {
     getTree(state): CommentNode[] {
-        if (state !==undefined && state!==null && state?.comments?.length>0) {
-            return state.comments
+
+        let stringTree = storageService.getTree()
+        let tree: KeyValue[];
+
+        try {
+            tree = JSON.parse(stringTree ?? '[]');
+        } catch (e){
+            tree = [] as KeyValue[];
         }
 
-        let commentsTree: string | null = storageService.getTree()
 
-        if(commentsTree == null || commentsTree?.length == 0){
-            return [] as CommentNode[];
-        }
-
-        console.log(commentsTree)
-
-        return JSON.parse(commentsTree) as CommentNode[]
+        return tree
     },
 };
 
