@@ -5,6 +5,7 @@
       <button :disabled="isDisable" @click="toggle">Comment</button>
       <div v-if="isVisible">
         <textarea v-model="rootNode.message"></textarea>
+
         <button @click="addRootComment" >Send</button>
         <button @click="toggle">Cancel</button>
       </div>
@@ -12,7 +13,9 @@
     <Comment
         v-for="comment in commentsTree"
         @addComment="addChildComment($event, comment)"
-        :comment="comment" :parent-id="root"/>
+        @deleteComment="deleteChildComment"
+        @saveEditComment="editChildComment"
+        :comment="comment" :parent-id="null"/>
   </div>
 </template>
 
@@ -20,10 +23,10 @@
 import Comment from "./Comment.vue"
 import {CommentNode} from "@/types/common";
 import Vue  from "vue";
-//import { mapGetters, mapActions} from 'vuex';
+
 import {addChildComment} from "./composables/commentBase"
 import $store from "../store"
-import {TreeHelper, uuidv4} from "@/store/comments-module/treeHelper";
+import {uuidv4} from "@/store/comments-module/treeHelper";
 
 export default Vue.extend({
   name: "CommentsTree",
@@ -33,41 +36,43 @@ export default Vue.extend({
       isVisible: false,
       isDisable: false,
       rootNode: new CommentNode(),
-      root: 'root'
     }
 
   },
   components: {
     Comment
   },
+
+  mounted() {
+    this.commentsTree = $store.getters['commentsModule/getTree']
+  },
+
   methods: {
-   // ...mapActions('comments-module', { addTestComment: 'addComment'}),
+
     addRootComment (): void {
       this.rootNode.date = new Date()
       this.rootNode.name = `name-${uuidv4().substring(0,3)}`
       this.rootNode.childs = []
       this.rootNode.id = uuidv4()
-      this.rootNode.parentId = 'root'
+      this.rootNode.parentId = null
       this.commentsTree.push(this.rootNode)
 
-      debugger
+      $store.dispatch('commentsModule/addComment', this.rootNode );
 
-      $store.dispatch('commentsModule/addComment', {
-        newItem: this.rootNode
-      });
-
-
-      //var th = new TreeHelper();
-      //var res=  th.convertToFlat(this.commentsTree)
-     // console.log(this.commentsTree)
-      //console.log(res)
-      /*this.addTestComment({
-        node: this.commentsTree,
-        newItem: this.rootNode
-      });*/
 
       this.toggle()
 
+    },
+    deleteChildComment(e) {
+      let index = this.commentsTree.indexOf(e)
+      this.commentsTree.splice(index,1)
+      $store.dispatch('commentsModule/deleteComment', e.id);
+
+    },
+    editChildComment(e) {
+      $store.dispatch('commentsModule/editComment', e);
+      let item = this.commentsTree.filter(i => i.id===e.id );
+      item[0].message = e.message
     },
     addChildComment,
     toggle(): void {
@@ -76,11 +81,7 @@ export default Vue.extend({
       this.isDisable = !this.isDisable
     },
   },
-    /*computed: {
-    ...mapGetters([
-    'getTree'
-  ]),
-    } */
+
 
 })
 </script>

@@ -35,5 +35,9 @@
   ],
   "exclude": [
     "node_modules"
+  ],
+  "typeRoots": [
+    "./src/typings",
+    "./node_modules/@types/"
   ]
 }

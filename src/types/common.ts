@@ -5,11 +5,13 @@ export class CommentNode {
     message: string = '';
     date: Date = new Date();
     id: string = uuidv4();
-    parentId: string = 'root';
+    parentId: string | null= 'root';
     childs: CommentNode[] = []
 }
 
+/*
 export interface ModifyCommentDto {
     newItem: CommentNode
 }
+*/
 
