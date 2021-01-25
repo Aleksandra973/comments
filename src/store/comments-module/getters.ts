@@ -22,21 +22,14 @@ const getters: GetterTree<CommentsState, RootState> = {
         fakeRootNode.childs = []
         fakeRootNode.id = 'root'
 
-
         tree.push(fakeRootNode)
 
         let resultTree = createTreeFromFlatArray(tree).root.children
 
-
-        //TreeHelper.converter(resultTree)
-//debugger
         for (const resultTreeElement of resultTree) {
             TreeHelper.converter(resultTreeElement)
             TreeHelper.bfs(resultTreeElement)
         }
-
-
-        console.log(resultTree)
         return resultTree
 
 

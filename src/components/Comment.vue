@@ -2,7 +2,7 @@
   <div>
     <div class="comment-card">
       <span class="comment-card__title">{{ comment.name }}</span>
-      <span class="comment-card__date"> {{ moment(comment.data) }}</span>
+      <span class="comment-card__date"> {{ moment(comment.date) }}</span>
 
       <p>{{comment.message}}</p>
         <button @click="editComment" class="btn btn-light">Edit</button>
