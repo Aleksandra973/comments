@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <img class="" src="../../public/cat.jpg">
+    <img class="img-cat" src="../../public/cat.jpg">
     <div>
-      <button :disabled="isDisable" @click="toggle">Comment</button>
+      <button :disabled="isDisable" @click="toggle" class="btn btn-primary">Comment</button>
       <div v-if="isVisible">
         <textarea v-model="rootNode.message"></textarea>
 
@@ -13,8 +13,8 @@
     <Comment
         v-for="comment in commentsTree"
         @addComment="addChildComment($event, comment)"
-        @deleteComment="deleteChildComment"
-        @saveEditComment="editChildComment"
+        @deleteComment="deleteChildComment($event,commentsTree)"
+        @saveEditComment="editChildComment($event,commentsTree)"
         :comment="comment" :parent-id="null"/>
   </div>
 </template>
@@ -24,7 +24,7 @@ import Comment from "./Comment.vue"
 import {CommentNode} from "@/types/common";
 import Vue  from "vue";
 
-import {addChildComment} from "./composables/commentBase"
+import {addChildComment, deleteChildComment, editChildComment, getRandomName} from "./composables/commentBase"
 import $store from "../store"
 import {uuidv4} from "@/store/comments-module/treeHelper";
 
@@ -51,7 +51,7 @@ export default Vue.extend({
 
     addRootComment (): void {
       this.rootNode.date = new Date()
-      this.rootNode.name = `name-${uuidv4().substring(0,3)}`
+      this.rootNode.name = getRandomName()
       this.rootNode.childs = []
       this.rootNode.id = uuidv4()
       this.rootNode.parentId = null
@@ -63,18 +63,12 @@ export default Vue.extend({
       this.toggle()
 
     },
-    deleteChildComment(e) {
-      let index = this.commentsTree.indexOf(e)
-      this.commentsTree.splice(index,1)
-      $store.dispatch('commentsModule/deleteComment', e.id);
+    deleteChildComment,
 
-    },
-    editChildComment(e) {
-      $store.dispatch('commentsModule/editComment', e);
-      let item = this.commentsTree.filter(i => i.id===e.id );
-      item[0].message = e.message
-    },
+    editChildComment,
+
     addChildComment,
+
     toggle(): void {
       this.rootNode = {  } as CommentNode;
       this.isVisible = !this.isVisible

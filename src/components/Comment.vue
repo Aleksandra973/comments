@@ -1,34 +1,36 @@
 <template>
   <div>
-    <div>
-      <span>{{ comment.message }}:{{ comment.name }}</span>
-      <button @click="editComment">Edit</button>
-      <button @click="deleteComment">Delete</button>
-    </div>
+    <div class="comment-card">
+      <span class="comment-card__title">{{ comment.name }}</span>
+      <span class="comment-card__date"> {{ moment(comment.data) }}</span>
 
-    <div>
-      <button class="btn-secondary" :disabled="isDisable" @click="toggle">Comment</button>
+      <p>{{comment.message}}</p>
+        <button @click="editComment" class="btn btn-light">Edit</button>
+        <button @click="deleteComment" class="btn btn-light">Delete</button>
+        <button class="btn btn-primary comment-card__btn" :disabled="isDisable" @click="toggle">Comment</button>
+
       <div v-if="editIsVisible">
-        <textarea v-model="editMessage"></textarea>
-        <button @click="saveComment">Save</button>
-        <button @click="editToggle">Cancel</button>
+        <textarea class="form-control comment-card__textarea" v-model="editMessage"></textarea>
+        <button @click="saveComment" class="btn btn-outline-primary">Save</button>
+        <button @click="editToggle" class="btn btn-outline-secondary">Cancel</button>
       </div>
       <div v-if="isVisible">
-        <textarea v-model="message"></textarea>
-        <button @click="addComment">Send</button>
-        <button @click="toggle">Cancel</button>
+        <textarea class="form-control" v-model="message"></textarea>
+        <button @click="addComment" class="btn btn-outline-primary">Send</button>
+        <button @click="toggle" class="btn btn-outline-secondary">Cancel</button>
       </div>
-      <div style="margin-left: 30px; border: solid 1px">
-        <Comment
-            v-for="child in comment.childs"
-            :comment="child"
-            @addComment="addChildComment($event, child)"
-            @deleteComment="deleteChildComment"
-            @saveEditComment="editChildComment"
-            :parent-id="comment.id"
+    </div>
 
-        />
-      </div>
+    <div class="comment-tab">
+      <Comment
+          v-for="child in comment.childs"
+          :comment="child"
+          @addComment="addChildComment($event, child)"
+          @deleteComment="deleteChildComment($event, comment.childs)"
+          @saveEditComment="editChildComment($event, comment.childs)"
+          :parent-id="comment.id"
+
+      />
     </div>
 
 
@@ -40,7 +42,7 @@
 
 import {PropType} from "vue";
 import {CommentNode} from "@/types/common";
-import {addChildComment} from "./composables/commentBase"
+import {addChildComment, deleteChildComment, editChildComment, getRandomName} from "./composables/commentBase"
 import Vue from "vue";
 
 import moment from "moment";
@@ -74,20 +76,24 @@ export default Vue.extend({
       this.$emit('saveEditComment', {id: this.comment.id, message: this.editMessage})
       this.editToggle()
     },
+
     editToggle() {
       this.editIsVisible = !this.editIsVisible
-      this.editMessage=this.comment.message
+      this.editMessage = this.comment.message
     },
-    toggle():void {
+    toggle(): void {
       this.message = ''
       this.isVisible = !this.isVisible
       this.isDisable = !this.isDisable
     },
+
     moment(dt: Date) {
-      return moment(dt).format()
+      return moment(dt).format('MM.DD.YY: HH:mm')
     },
-    addComment():void {
+
+    addComment(): void {
       let event = new CommentNode();
+      event.name = getRandomName()
       event.parentId = this.comment.id
       event.message = this.message
       event.date = new Date()
@@ -98,25 +104,22 @@ export default Vue.extend({
       this.message = ''
       this.toggle()
     },
-    addChildComment,
-    deleteComment(): void {
 
+    addChildComment,
+
+    deleteChildComment,
+
+    editChildComment,
+
+    deleteComment(): void {
       this.$emit('deleteComment', this.comment)
     },
-    deleteChildComment(e): void {
-      let index = this.comment.childs.indexOf(e)
-      this.comment.childs.splice(index,1)
-      $store.dispatch('commentsModule/deleteComment', e.id);
-    },
+
     editComment(): void {
       this.editToggle()
     },
-    editChildComment(e) {
-      let item = this.comment.childs.filter(i => i.id===e.id );
-      item[0].message = e.message
-      $store.dispatch('commentsModule/editComment', e)
-    },
-  },
+
+  }
 
 })
 

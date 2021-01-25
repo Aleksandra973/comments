@@ -4,7 +4,7 @@ import store from './store'
 
 import 'jquery'
 import 'bootstrap'
-
+import './scss/styles.scss'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 
